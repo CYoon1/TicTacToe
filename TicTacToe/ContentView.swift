@@ -56,6 +56,19 @@ enum Player: Int {
         }
     }
 }
+enum GameState: Int {
+    case running = 0, won, draw
+    var text: String {
+        switch self {
+        case .running:
+            "Game in Progress"
+        case .won:
+            "Game Has Been Won"
+        case .draw:
+            "Game Results in a Tie"
+        }
+    }
+}
 struct Tile: Identifiable {
     var id : UUID = UUID()
     var player : Player = .none
@@ -103,8 +116,9 @@ class Engine {
     var colMax: Int = 3
     
     var isGameOver: Bool = false
+    var currentGameState : GameState = .running
     
-    var currentPlayer : Player = .none
+    var currentPlayer : Player = .x
     func changeTurn() {
         if currentPlayer == .x {
             currentPlayer = .o
@@ -114,6 +128,7 @@ class Engine {
     }
     
     func handleTap(row: Int, col: Int) {
+        guard currentGameState == .running else { return }
         let selectedTile = board[row][col]
         guard selectedTile.player == .none else { return }
         changeTile(row: row, col: col)
@@ -121,6 +136,36 @@ class Engine {
     }
     func changeTile(row: Int, col: Int) {
         board[row][col].player = currentPlayer
+    }
+    
+    func updateGameState() {
+        // check for a win
+        // else, check for a draw (all tiles filled)
+        // else, game continues
+    }
+    func checkDiagonalWin() -> Player {
+        // check the 2 diagonals, return winning player or .none
+        let center = board[1][1].player
+        if center == .none {
+            return .none
+        }
+        if (center == board[0][0].player) && (center == board[2][2].player) {
+            return center
+        }
+        if (center == board[2][0].player) && (center == board[0][2].player) {
+            return center
+        }
+        return .none
+    }
+    func checkVerticalWin() {
+        // check the 3 verticals, return winning player or .none
+    }
+    func checkHorizontalWin() {
+        // check the 3 horizontals, return winning player or .none
+    }
+    func checkForDraw() {
+        // check all spots for .none, if all are filled, game is a draw
+        // otherwise continue
     }
     
     func resetGame() {
@@ -132,6 +177,7 @@ class Engine {
         ]
         isGameOver = false
         currentPlayer = .x
+        currentGameState = .running
     }
 }
 #Preview {
