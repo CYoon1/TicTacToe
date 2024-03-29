@@ -21,6 +21,7 @@ struct ContentView: View {
 
 struct BoardView: View {
     @State var vm = VM()
+    @State var showAlert = false
     var body: some View {
         VStack(spacing: vm.spacing) {
             ForEach(0..<vm.rowMax, id: \.self) { row in
@@ -31,6 +32,21 @@ struct BoardView: View {
                 }
             }
         }
+        .onChange(of: vm.isGameOver) {
+            if vm.isGameOver {
+                showAlert = true
+            }
+        }
+        .alert("Game Over", isPresented: $showAlert) {
+            Button {
+                vm.engine.resetGame()
+            } label: {
+                Text("OK")
+            }
+        } message: {
+            Text("BLANK has won the game")
+        }
+
     }
 }
 enum Player: Int {
@@ -102,6 +118,7 @@ class VM {
         TileView(tile: engine.board[row][col])
             .onTapGesture {
                 self.engine.handleTap(row: row, col: col)
+                self.isGameOver = true
             }
     }
 }
@@ -154,16 +171,52 @@ class Engine {
         }
         return .none
     }
-    func checkVerticalWin() {
-        // check the 3 verticals, return winning player or .none
-        
+    func checkVerticalWin() -> Player {
+        // check the 3 verticals, return winning player or .none (Columns)
+        if (board[0][0].player == board[1][0].player) && (board[0][0].player == board[2][0].player) && (board[0][0].player != .none) {
+            // win in first column
+            return board[0][0].player
+        } else if (board[0][1].player == board[1][1].player) && (board[0][1].player == board[2][1].player) && (board[0][1].player != .none)  {
+            // win in second column
+            return board[0][1].player
+        } else if (board[0][2].player == board[1][2].player) && (board[0][2].player == board[2][2].player) && (board[0][2].player != .none)  {
+            // win in third column
+            return board[0][2].player
+        } else {
+            // no win
+            return .none
+        }
     }
-    func checkHorizontalWin() {
-        // check the 3 horizontals, return winning player or .none
+    func checkHorizontalWin() -> Player {
+        // check the 3 horizontals, return winning player or .none (Rows)
+        if (board[0][0].player == board[0][1].player) && (board[0][0].player == board[0][2].player) && (board[0][0].player != .none) {
+            // win in first row
+            return board[0][0].player
+        } else if (board[1][0].player == board[1][1].player) && (board[1][0].player == board[1][2].player) && (board[1][0].player != .none)  {
+            // win in second row
+            return board[1][0].player
+        } else if (board[2][0].player == board[2][1].player) && (board[2][0].player == board[2][2].player) && (board[2][0].player != .none)  {
+            // win in third row
+            return board[0][2].player
+        } else {
+            // no win
+            return .none
+        }
+        
     }
     func checkForDraw() {
         // check all spots for .none, if all are filled, game is a draw
+        var numberOfEmptyTiles: Int = 0
+        for row in 0..<rowMax {
+            for col in 0..<colMax {
+                if board[row][col].player == .none {
+                    numberOfEmptyTiles += 1
+                }
+            }
+        }
         // otherwise continue
+        
+        
     }
     
     func resetGame() {
