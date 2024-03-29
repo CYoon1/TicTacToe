@@ -149,16 +149,14 @@ class Engine {
         if center == .none {
             return .none
         }
-        if (center == board[0][0].player) && (center == board[2][2].player) {
-            return center
-        }
-        if (center == board[2][0].player) && (center == board[0][2].player) {
+        if ((center == board[0][0].player) && (center == board[2][2].player)) || ((center == board[2][0].player) && (center == board[0][2].player)) {
             return center
         }
         return .none
     }
     func checkVerticalWin() {
         // check the 3 verticals, return winning player or .none
+        
     }
     func checkHorizontalWin() {
         // check the 3 horizontals, return winning player or .none
