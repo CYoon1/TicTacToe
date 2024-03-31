@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  BoardView.swift
 //  TicTacToe
 //
 //  Created by Christopher Yoon on 3/29/24.
