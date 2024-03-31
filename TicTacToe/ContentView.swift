@@ -44,7 +44,7 @@ struct BoardView: View {
                 Text("OK")
             }
         } message: {
-            Text("BLANK has won the game")
+            Text(vm.getAlertText())
         }
 
     }
@@ -118,6 +118,9 @@ class VM {
     }
     func resetGame() {
         engine.resetGame()
+    }
+    func getAlertText() -> String {
+        engine.currentGameState.text
     }
     @ViewBuilder
     func tileView(row: Int, col: Int) -> some View {
