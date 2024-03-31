@@ -53,13 +53,13 @@ struct Tile: Identifiable {
 
 @Observable
 class Engine {
-    var board = [
+    private (set) var board = [
         [Tile(), Tile(), Tile()],
         [Tile(), Tile(), Tile()],
         [Tile(), Tile(), Tile()],
     ]
-    var rowMax: Int = 3
-    var colMax: Int = 3
+    let rowMax: Int = 3
+    let colMax: Int = 3
     
     var currentGameState : GameState = .running
     var isGameOver: Bool = false

@@ -11,7 +11,7 @@ import SwiftUI
 @Observable
 class VM {
     var spacing: CGFloat = 5
-    var engine = Engine()
+    private var engine = Engine()
     
     var rowMax: Int  {
         engine.rowMax
