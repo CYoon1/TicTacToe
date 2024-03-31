@@ -39,7 +39,7 @@ struct BoardView: View {
         }
         .alert("Game Over", isPresented: $showAlert) {
             Button {
-                vm.engine.resetGame()
+                vm.resetGame()
             } label: {
                 Text("OK")
             }
@@ -54,7 +54,7 @@ enum Player: Int {
     var text: String {
         switch self {
         case .none:
-            "blank"
+            "none"
         case .x:
             "X"
         case .o:
@@ -73,13 +73,15 @@ enum Player: Int {
     }
 }
 enum GameState: Int {
-    case running = 0, won, draw
+    case running = 0, xwin, owin, draw
     var text: String {
         switch self {
         case .running:
             "Game in Progress"
-        case .won:
-            "Game Has Been Won"
+        case .xwin:
+            "X has Won the Game"
+        case .owin:
+            "O has Won the Game"
         case .draw:
             "Game Results in a Tie"
         }
@@ -111,14 +113,17 @@ class VM {
     var rowMax: Int = 3
     var colMax: Int = 3
     var spacing: CGFloat = 5
-    var isGameOver: Bool = false
-    
+    var isGameOver: Bool {
+        engine.isGameOver
+    }
+    func resetGame() {
+        engine.resetGame()
+    }
     @ViewBuilder
     func tileView(row: Int, col: Int) -> some View {
         TileView(tile: engine.board[row][col])
             .onTapGesture {
                 self.engine.handleTap(row: row, col: col)
-                self.isGameOver = true
             }
     }
 }
@@ -132,11 +137,12 @@ class Engine {
     var rowMax: Int = 3
     var colMax: Int = 3
     
-    var isGameOver: Bool = false
     var currentGameState : GameState = .running
+    var isGameOver: Bool = false
     
     var currentPlayer : Player = .x
     func changeTurn() {
+        guard currentGameState == .running else { return }
         if currentPlayer == .x {
             currentPlayer = .o
         } else {
@@ -149,7 +155,8 @@ class Engine {
         let selectedTile = board[row][col]
         guard selectedTile.player == .none else { return }
         changeTile(row: row, col: col)
-        changeTurn()
+        // check for win
+        updateGameState()
     }
     func changeTile(row: Int, col: Int) {
         board[row][col].player = currentPlayer
@@ -157,8 +164,29 @@ class Engine {
     
     func updateGameState() {
         // check for a win
+        flagWin(player: checkDiagonalWin())
+        flagWin(player: checkVerticalWin())
+        flagWin(player: checkHorizontalWin())
         // else, check for a draw (all tiles filled)
-        // else, game continues
+        checkForDraw()
+        // else, game continues (only change turn if game continues)
+        changeTurn()
+    }
+    func flagWin(player: Player) {
+        guard currentGameState == .running else { return }
+        if player.text == "X" {
+            // X Wins
+            currentGameState = .xwin
+            isGameOver = true
+        } else if player.text == "O" {
+            // O Wins
+            currentGameState = .owin
+            isGameOver = true
+        } else {
+            // No Win Detected
+            currentGameState = .running
+            isGameOver = false
+        }
     }
     func checkDiagonalWin() -> Player {
         // check the 2 diagonals, return winning player or .none
@@ -205,7 +233,8 @@ class Engine {
         
     }
     func checkForDraw() {
-        // check all spots for .none, if all are filled, game is a draw
+        guard currentGameState == .running else { return }
+        // check all spots for .none
         var numberOfEmptyTiles: Int = 0
         for row in 0..<rowMax {
             for col in 0..<colMax {
@@ -214,9 +243,12 @@ class Engine {
                 }
             }
         }
+        // if there are 0 spots, game is a draw
+        if numberOfEmptyTiles == 0 {
+            currentGameState = .draw
+            isGameOver = true
+        }
         // otherwise continue
-        
-        
     }
     
     func resetGame() {
