@@ -62,7 +62,7 @@ class Engine {
     let colMax: Int = 3
     
     var currentGameState : GameState = .running
-    var isGameOver: Bool = false
+//    var isGameOver: Bool = false
     
     var currentPlayer : Player = .x
     func changeTurn() {
@@ -101,15 +101,12 @@ class Engine {
         if player.text == "X" {
             // X Wins
             currentGameState = .xwin
-            isGameOver = true
         } else if player.text == "O" {
             // O Wins
             currentGameState = .owin
-            isGameOver = true
         } else {
             // No Win Detected
             currentGameState = .running
-            isGameOver = false
         }
     }
     func checkDiagonalWin() -> Player {
@@ -149,7 +146,7 @@ class Engine {
             return board[1][0].player
         } else if (board[2][0].player == board[2][1].player) && (board[2][0].player == board[2][2].player) && (board[2][0].player != .none)  {
             // win in third row
-            return board[0][2].player
+            return board[2][0].player
         } else {
             // no win
             return .none
@@ -170,7 +167,6 @@ class Engine {
         // if there are 0 spots, game is a draw
         if numberOfEmptyTiles == 0 {
             currentGameState = .draw
-            isGameOver = true
         }
         // otherwise continue
     }
@@ -182,7 +178,6 @@ class Engine {
             [Tile(), Tile(), Tile()],
             [Tile(), Tile(), Tile()],
         ]
-        isGameOver = false
         currentPlayer = .x
         currentGameState = .running
     }

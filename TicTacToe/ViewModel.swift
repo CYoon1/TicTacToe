@@ -21,7 +21,7 @@ class VM {
     }
     
     var isGameOver: Bool {
-        engine.isGameOver
+        engine.currentGameState != .running
     }
     func resetGame() {
         engine.resetGame()
