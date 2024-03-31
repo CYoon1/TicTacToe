@@ -22,6 +22,34 @@ enum GameState: Int {
         }
     }
 }
+enum Player: Int {
+    case none = 0, x, o
+    var text: String {
+        switch self {
+        case .none:
+            "none"
+        case .x:
+            "X"
+        case .o:
+            "O"
+        }
+    }
+    var symbol: String {
+        switch self {
+        case .none:
+            ""
+        case .x:
+            "xmark"
+        case .o:
+            "circle"
+        }
+    }
+}
+
+struct Tile: Identifiable {
+    var id : UUID = UUID()
+    var player : Player = .none
+}
 
 @Observable
 class Engine {
