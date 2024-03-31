@@ -109,10 +109,16 @@ struct TileView: View {
 
 @Observable
 class VM {
-    var engine = Engine()
-    var rowMax: Int = 3
-    var colMax: Int = 3
     var spacing: CGFloat = 5
+    var engine = Engine()
+    
+    var rowMax: Int  {
+        engine.rowMax
+    }
+    var colMax: Int {
+        engine.colMax
+    }
+    
     var isGameOver: Bool {
         engine.isGameOver
     }
@@ -122,6 +128,7 @@ class VM {
     func getAlertText() -> String {
         engine.currentGameState.text
     }
+    
     @ViewBuilder
     func tileView(row: Int, col: Int) -> some View {
         TileView(tile: engine.board[row][col])
